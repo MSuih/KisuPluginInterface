@@ -1,21 +1,23 @@
 package mouse;
 
-import pinej.PineClient;
-import pinej.PineEnums;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public record PluginInformation(PineEnums.TargetPlatform platform, String name, String author, String moduleVersion,
-                                String gameSerial, String gameHash, String gameVersion, String description) {
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.TYPE)
+public @interface PluginInformation {
+    String platform();
+    String name();
+    String author();
+    String version() default "1.0";
+    String description() default "";
+    SupportedGame game();
 
-    public boolean isValidFor(PineClient.GameInfo info) {
-        if (gameSerial != null && !gameSerial.equals(info.id())) {
-            return false;
-        }
-        if (gameHash != null && gameHash.equals(info.uuid())) {
-            return false;
-        }
-        if (gameVersion != null && gameVersion.equals(info.version())) {
-            return false;
-        }
-        return true;
+    @interface SupportedGame {
+        String serial();
+        String version() default "Any";
+        String hash() default "";
     }
 }
